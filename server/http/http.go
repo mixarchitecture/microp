@@ -40,7 +40,7 @@ func RunServerOnAddr(addr string, cfg Config) {
 		cfg.BodyLimit = 5 * 1024 * 1024
 	}
 	if cfg.ReadBufferSize == 0 {
-		cfg.ReadBufferSize = 5 * 1024 * 1024
+		cfg.ReadBufferSize = 8 * 1024 * 1024
 	}
 	app := fiber.New(fiber.Config{
 		ErrorHandler: error_handler.New(error_handler.Config{
