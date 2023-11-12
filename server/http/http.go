@@ -17,13 +17,14 @@ import (
 )
 
 type Config struct {
-	Host          string
-	Port          int
-	Group         string
-	AppName       string
-	CreateHandler func(router fiber.Router) fiber.Router
-	I18n          *i18np.I18n
-	BodyLimit     int
+	Host           string
+	Port           int
+	Group          string
+	AppName        string
+	CreateHandler  func(router fiber.Router) fiber.Router
+	I18n           *i18np.I18n
+	BodyLimit      int
+	ReadBufferSize int
 }
 
 func RunServer(cfg Config) {
@@ -38,17 +39,21 @@ func RunServerOnAddr(addr string, cfg Config) {
 	if cfg.BodyLimit == 0 {
 		cfg.BodyLimit = 5 * 1024 * 1024
 	}
+	if cfg.ReadBufferSize == 0 {
+		cfg.ReadBufferSize = 5 * 1024 * 1024
+	}
 	app := fiber.New(fiber.Config{
 		ErrorHandler: error_handler.New(error_handler.Config{
 			// DfMsgKey: "error_internal_server_error",
 			I18n: cfg.I18n,
 		}),
-		JSONEncoder:   json.Marshal,
-		JSONDecoder:   json.Unmarshal,
-		CaseSensitive: true,
-		AppName:       cfg.AppName,
-		ServerHeader:  cfg.AppName,
-		BodyLimit:     cfg.BodyLimit,
+		JSONEncoder:    json.Marshal,
+		JSONDecoder:    json.Unmarshal,
+		CaseSensitive:  true,
+		AppName:        cfg.AppName,
+		ServerHeader:   cfg.AppName,
+		BodyLimit:      cfg.BodyLimit,
+		ReadBufferSize: cfg.ReadBufferSize,
 	})
 	group := app.Group(fmt.Sprintf("/%v", cfg.Group))
 	setGlobalMiddlewares(app, cfg)
